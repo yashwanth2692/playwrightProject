@@ -1,19 +1,30 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 
-test('has title', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
+test.describe('My First Test Suite', () => {
+  test('Mobile Number is applied or not in Login', async ({ page }) => {
+    // Navigate to the example page with retries to avoid intermittent
+    // Add your test steps and assertions here
+    await page.goto('https://www.makemytrip.com/');
+    await expect(page).toHaveTitle(/MakeMyTrip/);
 
-  // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/Playwright/);
-});
+    // Close modal if present (guarded to avoid flaky failures)
+    try {
+      const closeModal = page.locator("//span[@data-cy='closeModal']");
+      await closeModal.click();
+    } catch (e) {
+      // ignore if modal not present or click fails
+    }
 
-test('get started link', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
-
-  // Click the get started link.
-  await page.getByRole('link', { name: 'Get started' }).click();
-
-  // Expects page to have a heading with the name of Installation.
-  await expect(page.getByRole('heading', { name: 'Installation' })).toBeVisible();
+    const login = page.locator("//p[@data-cy='LoginHeaderText']");
+    const loginText = (await login.textContent() || '').trim();
+    expect(loginText).toBe('Login or Create Account');
+    console.log(loginText);
+    await login.click();
+    await page.locator('//div[@class="cntrycode__wrap makeRelative"]').click();
+    await page.locator('#enterCountry').fill('India');
+    await page.locator('//span[contains(text(), "India")]/following-sibling::span[text()="IN"]').click();
+    await page.locator('//input[@data-cy="userName"]').fill('9876543210');
+    await page.locator('//input[@data-cy="userName"]').clear();
+  });
 });
