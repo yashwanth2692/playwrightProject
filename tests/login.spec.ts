@@ -1,11 +1,17 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { linkofPage } from '../utilities/links.spec.ts';
 
 test.describe('My First Test Suite', () => {
   test('Mobile Number is applied or not in Login', async ({ page }) => {
     // Navigate to the example page with retries to avoid intermittent
     // Add your test steps and assertions here
-    await page.goto('https://www.makemytrip.com/');
+    try {
+      await page.goto(linkofPage, { waitUntil: 'networkidle' });
+    } catch (error) {
+      console.error('Failed to navigate:', error);
+      throw error; // Rethrow the error after logging
+    }
     await expect(page).toHaveTitle(/MakeMyTrip/);
 
     // Close modal if present (guarded to avoid flaky failures)

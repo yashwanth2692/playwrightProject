@@ -1,0 +1,1 @@
+export const linkofPage = 'https://www.makemytrip.com/';
