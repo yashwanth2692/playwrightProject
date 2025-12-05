@@ -33,4 +33,8 @@ test.describe('My First Test Suite', () => {
     await page.locator('//input[@data-cy="userName"]').fill('9876543210');
     await page.locator('//input[@data-cy="userName"]').clear();
   });
+
+  test.afterEach(async ({ page }) => {
+    await page.close();
+  } );
 });
