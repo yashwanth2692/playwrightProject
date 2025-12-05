@@ -3,28 +3,34 @@ import { test, expect } from '@playwright/test';
 
 test.describe('My First Test Suite', () => {
   test('Mobile Number is applied or not in Login', async ({ page }) => {
-    // Navigate to the example page with retries to avoid intermittent
-    // Add your test steps and assertions here
-    await page.goto('https://www.makemytrip.com/');
-    await expect(page).toHaveTitle(/MakeMyTrip/);
-
-    // Close modal if present (guarded to avoid flaky failures)
     try {
-      const closeModal = page.locator("//span[@data-cy='closeModal']");
-      await closeModal.click();
-    } catch (e) {
-      // ignore if modal not present or click fails
+      await page.goto('https://www.redbus.in/', { waitUntil: 'networkidle' });
+    } catch (error) {
+      console.error('Failed to navigate:', error);
+      throw error;
     }
 
-    const login = page.locator("//p[@data-cy='LoginHeaderText']");
-    const loginText = (await login.textContent() || '').trim();
-    expect(loginText).toBe('Login or Create Account');
-    console.log(loginText);
-    await login.click();
-    await page.locator('//div[@class="cntrycode__wrap makeRelative"]').click();
-    await page.locator('#enterCountry').fill('India');
-    await page.locator('//span[contains(text(), "India")]/following-sibling::span[text()="IN"]').click();
-    await page.locator('//input[@data-cy="userName"]').fill('9876543210');
-    await page.locator('//input[@data-cy="userName"]').clear();
+    await expect(page).toHaveTitle(/redbus/i);
+
+    // Click Login button
+    const loginBtn = page.locator("//div[@id='sign-in-icon-down']");
+    await loginBtn.click();
+
+    // Click Sign In / Sign Up
+    const signIn = page.locator("//div[contains(text(),'Sign In/Sign Up')]");
+    await signIn.click();
+
+    // Switch to mobile number frame
+    const iframe = page.frameLocator("iframe[title='loginIframe']");
+    await iframe.locator("input#mobileNoInp").fill("9876543210");
+
+    // Clear number
+    await iframe.locator("input#mobileNoInp").clear();
+
+    console.log("Mobile number field interaction successful");
+  });
+
+  test.afterEach(async ({ page }) => {
+    await page.close();
   });
 });
